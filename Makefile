@@ -7,7 +7,7 @@ OUTDIR		=	data_output
 
 all : $(OUTDIR) hax installer
 
-hax : $(OUTDIR) firm0 firm1 sector stage2
+hax : $(OUTDIR) firm0 firm1 sector stage2 arm9bootloader
 
 $(OUTDIR):
 	@[ -d $(OUTDIR) ] || mkdir -p $(OUTDIR)
@@ -26,6 +26,12 @@ sector :
 	@$(PYTHON) common/sector_generator.py $(INDIR)/secret_sector.bin $(INDIR)/otp.bin $(OUTDIR)/sector.bin
 	@echo SECTOR done!
 
+arm9bootloader :
+	@echo make BOOTLOADER
+	@cd bootloader && make
+	@cp bootloader/arm9bootloader.bin $(OUTDIR)/arm9bootloader.bin
+	@echo BOOTLOADER done!
+
 stage2:
 	@cd payload_stage2 && make
 	@dd if=payload_stage2/payload_stage2.bin of=$(OUTDIR)/firm1.bin bs=512 seek=1936 conv=notrunc
@@ -43,6 +49,7 @@ clean:
 	@echo clean...
 	@cd payload_stage1 && make clean
 	@cd payload_stage2 && make clean
+	@cd bootloader && make clean
 	@cd payload_installer && make clean TARGET=../$(TARGET)
 	@rm -fr $(OUTDIR) payload_installer/brahma2/data/*.bin
 	
