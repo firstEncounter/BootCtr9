@@ -18,9 +18,9 @@ include $(DEVKITARM)/3ds_rules
 #---------------------------------------------------------------------------------
 export TARGET		:=	$(shell basename $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	source source/fatfs
+SOURCES		:=	source source/fatfs source/inih
 DATA		:=	data
-INCLUDES	:=	include source/fatfs
+INCLUDES	:=	include source/fatfs source/inih
 
 #---------------------------------------------------------------------------------
 # Setup some defines
