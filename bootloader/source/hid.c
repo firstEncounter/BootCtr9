@@ -8,3 +8,7 @@ u32 InputWait() {
             return ~pad_state;
     }
 }
+u32 GetInput() { 
+    u32 pad_state = HID_STATE; 
+    return ~pad_state; 
+} 

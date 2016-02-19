@@ -10,14 +10,14 @@
 / Functions and Buffer Configurations
 /---------------------------------------------------------------------------*/
 
-#define _FS_TINY        1   /* 0:Normal or 1:Tiny */
+#define _FS_TINY        0   /* 0:Normal or 1:Tiny */
 /* When _FS_TINY is set to 1, it reduces memory consumption _MAX_SS bytes each
 /  file object. For file data transfer, FatFs uses the common sector buffer in
 /  the file system object (FATFS) instead of private sector buffer eliminated
 /  from the file object (FIL). */
 
 
-#define _FS_READONLY    1   /* 0:Read/Write or 1:Read only */
+#define _FS_READONLY    0   /* 0:Read/Write or 1:Read only */
 /* Setting _FS_READONLY to 1 defines read only configuration. This removes
 /  writing functions, f_write(), f_sync(), f_unlink(), f_mkdir(), f_chmod(),
 /  f_rename(), f_truncate() and useless f_getfree(). */
@@ -33,7 +33,7 @@
 /   3: f_lseek() function is removed in addition to 2. */
 
 
-#define _USE_STRFUNC    1   /* 0:Disable or 1-2:Enable */
+#define _USE_STRFUNC    2   /* 0:Disable or 1-2:Enable */
 /* To enable string functions, set _USE_STRFUNC to 1 or 2. */
 
 
@@ -90,7 +90,7 @@
 
 
 #define _USE_LFN    1       /* 0 to 3 */
-#define _MAX_LFN    255     /* Maximum LFN length to handle (12 to 255) */
+#define _MAX_LFN    64     /* Maximum LFN length to handle (12 to 255) */
 /* The _USE_LFN option switches the LFN feature.
 /
 /   0: Disable LFN feature. _MAX_LFN and _LFN_UNICODE have no effect.
@@ -112,7 +112,7 @@
 /  functions. */
 
 
-#define _STRF_ENCODE    0   /* 0:ANSI/OEM, 1:UTF-16LE, 2:UTF-16BE, 3:UTF-8 */
+#define _STRF_ENCODE    3   /* 0:ANSI/OEM, 1:UTF-16LE, 2:UTF-16BE, 3:UTF-8 */
 /* When Unicode API is enabled by _LFN_UNICODE option, this option selects the character
 /  encoding on the file to be read/written via string I/O functions, f_gets(), f_putc(),
 /  f_puts and f_printf(). This option has no effect when Unicode API is not enabled. */

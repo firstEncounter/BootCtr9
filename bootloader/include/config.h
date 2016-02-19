@@ -8,9 +8,9 @@
 
 typedef struct {
     char* section;
-    char *path;
+    char path[64];
     unsigned long long delay;
-    int payload;
+    unsigned long payload;
     unsigned long offset;
 } configuration;
 

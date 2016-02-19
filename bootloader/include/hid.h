@@ -19,3 +19,4 @@
 
 
 u32 InputWait();
+u32 GetInput();
