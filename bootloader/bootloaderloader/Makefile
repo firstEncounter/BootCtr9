@@ -93,29 +93,20 @@ export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 
 export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib)
 
-.PHONY: $(BUILD) clean all bootloaderLoader
+.PHONY: $(BUILD) clean all
  
 #---------------------------------------------------------------------------------
-all: $(BUILD) bootloaderLoader
-
-
+all: $(BUILD)
 
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
 	@make --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
-	mv $(OUTPUT).bin arm9bootloader.bin
-
-bootloaderLoader:
-	@echo make BOOTLOADERLOADER
-	@cd bootloaderloader && make
-	@cp bootloaderloader/arm9loaderhax.bin arm9loaderhax.bin
-	@echo BOOTLOADERLOADER done!
+	mv $(OUTPUT).bin arm9loaderhax.bin
  
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@cd bootloaderloader && make clean
-	@rm -fr $(BUILD) $(OUTPUT).elf arm9bootloader.bin arm9loaderhax.bin
+	@rm -fr $(BUILD) $(OUTPUT).elf arm9loaderhax.bin
  
  
 #---------------------------------------------------------------------------------
