@@ -3,6 +3,7 @@ CMakeLists.txt
 
 data_output
 **/*.bin
+**/*.elf
 **/*.firm
 **/build
 **/data
