@@ -77,7 +77,7 @@ int main() {
 	    switch (config_err) {
 	        case 0:
 	            // section not found, try to load [DEFAULT] section
-	            if (!app.path) {
+	            if (strlen(app.path)==0) {
 	            	debug("section not found, trying to load the default section");
 	                app.section = "DEFAULT";
 	                // don't need to check error again
