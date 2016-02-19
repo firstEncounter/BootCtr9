@@ -58,19 +58,15 @@ int main() {
     	iniparse(INI_FILE, handler, &app);
     	debug("Checking key");
 
-    	u32 key = GetInput();
-    	switch (key) {
-	        // using X-macros to generate each switch-case rules
-	        // https://en.wikibooks.org/wiki/C_Programming/Preprocessor#X-Macros
-	        #define KEY(k) \
-	        case KEY_##k: \
-	            app.section = "KEY_"#k; \
-	            break;
-	        #include "keys.def"
-	        default:
-	            app.section = "DEFAULT";
-	            break;
-	    }
+		u32 key = GetInput();
+        // using X-macros to generate each switch-case rules
+        // https://en.wikibooks.org/wiki/C_Programming/Preprocessor#X-Macros
+        #define KEY(k) \
+        if(key & KEY_##k) \
+            app.section = "KEY_"#k; \
+        else
+        #include "keys.def"
+            app.section = "DEFAULT";
 
 	    debug("Key checked- selected section:");
 	    debug(app.section);
