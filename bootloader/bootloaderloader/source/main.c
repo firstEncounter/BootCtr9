@@ -1,5 +1,5 @@
 #include "common.h"
-#include "sdmmc.h"
+#include "fatfs/sdmmc/sdmmc.h"
 #include "i2c.h"
 #include "fatfs/ff.h"
 
@@ -13,11 +13,13 @@ int main()
 	FIL payload;
 	u32 br;
 	
-	if(f_mount(&fs, "0:", 0) == FR_OK)
+	if(f_mount(&fs, "0:", 1) == FR_OK)
 	{
 		if(f_open(&payload, "arm9bootloader.bin", FA_READ | FA_OPEN_EXISTING) == FR_OK)
 		{
 			f_read(&payload, BOOTLOADER_PAYLOAD_ADDRESS, BOOTLOADER_PAYLOAD_SIZE, &br);
+			f_close(&payload);
+			f_mount(&fs, "0:", 1);
 			((void (*)())BOOTLOADER_PAYLOAD_ADDRESS)();
 		}
 	}

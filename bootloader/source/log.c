@@ -3,15 +3,19 @@
 #include "fatfs/ff.h"
 #include "i2c.h"
 
+#define LOGNAME "/arm9loaderhax/arm9bootloader.log"
+#define LOGNAME_BACKUP "/arm9bootloader.log"
+
 static FIL logFile;
 bool logFileOpened=false;
 
 int initLog()
 {
-	const char logname[]="/arm9bootloader.log";
-	
-	if (f_open(&logFile, logname, FA_READ | FA_WRITE | FA_CREATE_ALWAYS ) != FR_OK)
-    	shutdown();
+	if (f_open(&logFile, LOGNAME, FA_READ | FA_WRITE | FA_CREATE_ALWAYS ) != FR_OK)
+    {
+    	if (f_open(&logFile, LOGNAME_BACKUP, FA_READ | FA_WRITE | FA_CREATE_ALWAYS ) != FR_OK)
+    		shutdown();
+    }
     logFileOpened=true;
     f_sync (&logFile);            
 	f_puts ("opened logfile\n", &logFile);
@@ -21,9 +25,12 @@ int initLog()
 }
 
 void closeLogFile()
-{
-	f_close(&logFile);
-	logFileOpened=false;
+{	
+	if(logFileOpened==true)
+	{
+		f_close(&logFile);
+		logFileOpened=false;
+	}
 }
 
 void debug(const char *msg)
@@ -48,8 +55,9 @@ void panic(const char *msg)
 }
 
 void shutdown() {
-	debug("shutdown");
-	closeLogFile();
+	//debug("shutdown");
+	//closeLogFile();
 	i2cWriteRegister(I2C_DEV_MCU, 0x20, (u8)(1<<0));
+	//exit(0);
 	while(1);
 }

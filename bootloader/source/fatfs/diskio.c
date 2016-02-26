@@ -1,19 +1,28 @@
 /*-----------------------------------------------------------------------*/
-/* Low level disk I/O module skeleton for FatFs     (C)ChaN, 2013        */
+/* Low level disk I/O module skeleton for FatFs     (C)ChaN, 2014        */
 /*-----------------------------------------------------------------------*/
 /* If a working storage control module is available, it should be        */
 /* attached to the FatFs via a glue function rather than modifying it.   */
 /* This is an example of glue functions to attach various exsisting      */
-/* storage control module to the FatFs module with a defined API.        */
+/* storage control modules to the FatFs module with a defined API.       */
 /*-----------------------------------------------------------------------*/
 
-#include "diskio.h"     /* FatFs lower layer API */
-#include "sdmmc.h"
+#include "diskio.h"		/* FatFs lower layer API */
+#include "sdmmc/sdmmc.h"
 
-/* Definitions of physical drive number for each media */
-#define ATA     0
-#define MMC     1
-#define USB     2
+
+/*-----------------------------------------------------------------------*/
+/* Get Drive Status                                                      */
+/*-----------------------------------------------------------------------*/
+
+DSTATUS disk_status (
+	__attribute__((unused))
+	BYTE pdrv		/* Physical drive nmuber to identify the drive */
+)
+{
+	return RES_OK;
+}
+
 
 
 /*-----------------------------------------------------------------------*/
@@ -21,24 +30,12 @@
 /*-----------------------------------------------------------------------*/
 
 DSTATUS disk_initialize (
-    BYTE pdrv               /* Physical drive nmuber (0..) */
+	__attribute__((unused))
+	BYTE pdrv				/* Physical drive nmuber to identify the drive */
 )
 {
-    sdmmc_sdcard_init();
-    return RES_OK;
-}
-
-
-
-/*-----------------------------------------------------------------------*/
-/* Get Disk Status                                                       */
-/*-----------------------------------------------------------------------*/
-
-DSTATUS disk_status (
-    BYTE pdrv       /* Physical drive nmuber (0..) */
-)
-{
-    return RES_OK; // Stubbed
+	sdmmc_sdcard_init();
+	return RES_OK;
 }
 
 
@@ -48,19 +45,18 @@ DSTATUS disk_status (
 /*-----------------------------------------------------------------------*/
 
 DRESULT disk_read (
-    BYTE pdrv,      /* Physical drive nmuber (0..) */
-    BYTE *buff,     /* Data buffer to store read data */
-    DWORD sector,   /* Sector address (LBA) */
-    UINT count      /* Number of sectors to read (1..128) */
+	__attribute__((unused))
+	BYTE pdrv,		/* Physical drive nmuber to identify the drive */
+	BYTE *buff,		/* Data buffer to store read data */
+	DWORD sector,	/* Sector address in LBA */
+	UINT count		/* Number of sectors to read */
 )
 {
-    switch(pdrv){
-        case 0:
-            if (sdmmc_sdcard_readsectors(sector,count,buff))
-                return RES_PARERR;
-            break;
-    }
-    return RES_OK;
+	if (sdmmc_sdcard_readsectors(sector, count, buff)) {
+		return RES_PARERR;
+	}
+
+	return RES_OK;
 }
 
 
@@ -71,21 +67,21 @@ DRESULT disk_read (
 
 #if _USE_WRITE
 DRESULT disk_write (
-    BYTE pdrv,          /* Physical drive nmuber (0..) */
-    const BYTE *buff,   /* Data to be written */
-    DWORD sector,       /* Sector address (LBA) */
-    UINT count          /* Number of sectors to write (1..128) */
+	__attribute__((unused))
+	BYTE pdrv,			/* Physical drive nmuber to identify the drive */
+	const BYTE *buff,	/* Data to be written */
+	DWORD sector,		/* Sector address in LBA */
+	UINT count			/* Number of sectors to write */
 )
 {
-    switch(pdrv){
-        case 0:
-            if (sdmmc_sdcard_writesectors(sector,count,buff))
-                return RES_PARERR;
-            break;
-    }
-    return RES_OK;
+	if (sdmmc_sdcard_writesectors(sector, count, (BYTE *)buff)) {
+		return RES_PARERR;
+	}
+
+	return RES_OK;
 }
 #endif
+
 
 
 /*-----------------------------------------------------------------------*/
@@ -94,12 +90,14 @@ DRESULT disk_write (
 
 #if _USE_IOCTL
 DRESULT disk_ioctl (
-    BYTE pdrv,      /* Physical drive nmuber (0..) */
-    BYTE cmd,       /* Control code */
-    void *buff      /* Buffer to send/receive control data */
+	__attribute__((unused))
+	BYTE pdrv,		/* Physical drive nmuber (0..) */
+	__attribute__((unused))
+	BYTE cmd,		/* Control code */
+	__attribute__((unused))
+	void *buff		/* Buffer to send/receive control data */
 )
 {
-	return RES_OK;
-    //return RES_PARERR; // Stubbed
+	return RES_PARERR;
 }
 #endif
