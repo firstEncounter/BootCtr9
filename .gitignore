@@ -7,5 +7,6 @@ data_output
 **/*.firm
 **/build
 **/data
+**/obj
 
 *.bat
