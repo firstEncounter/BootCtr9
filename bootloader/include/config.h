@@ -11,7 +11,10 @@ typedef struct {
     char path[64];
     unsigned long long delay;
     unsigned long payload;
-    unsigned long offset;
+    unsigned long offset; 
+	int splash; 
+	char splash_image[64]; 
+    unsigned int screenEnabled;
 } configuration;
 
 #define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0

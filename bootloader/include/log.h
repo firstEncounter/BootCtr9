@@ -5,6 +5,6 @@
 
 int initLog();
 void closeLogFile();
-void debug(const char *msg);
-void panic(const char *msg);
+void debug(const char *format, ...);
+void panic(const char *format, ...);
 void shutdown();

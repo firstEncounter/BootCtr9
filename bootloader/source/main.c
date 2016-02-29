@@ -6,19 +6,24 @@
 #include "hid.h"
 #include "log.h"
 #include "i2c.h"
+#include "screen.h"
+#include "splash.h"
 
-
-#define DEFAULT_PATH {0}
-#define DEFAULT_DELAY 2000 /* ms */
+#define DEFAULT_PATH 	{0}
+#define DEFAULT_DELAY	100 /* ms */
 #define DEFAULT_PAYLOAD -1 /* <0 - auto, 0 - disable, >0 - enabled */
-#define DEFAULT_OFFSET 0x12000
+#define DEFAULT_OFFSET 	0x12000
 #define DEFAULT_SECTION "GLOBAL"
-#define INI_FILE "/arm9loaderhax/boot_config.ini"
+#define DEFAULT_SCREEN 	1
+#define DEFAULT_SPLASH 3 /* 0 - disabled, 1 - splash screen, 2 - entry info, 3 - both */ 
+#define DEFAULT_SPLASH_IMAGE {0} 
+#define INI_FILE 		"/arm9loaderhax/boot_config.ini"
 #define INI_FILE_BOOTCTR "/boot_config.ini"
+
 
 #define PAYLOAD_ADDRESS		0x23F00000
 #define PAYLOAD_SIZE		0x00100000
-
+#define SCREEN_SIZE 		400 * 240 * 3 / 4 //yes I know this is more than the size of the bootom screen
 
 bool file_exists(const char* path) { 
     FIL fd;
@@ -57,9 +62,18 @@ int main() {
 	        .delay = DEFAULT_DELAY,
 	        .payload = DEFAULT_PAYLOAD,
 	        .offset = DEFAULT_OFFSET,
+	        .splash = DEFAULT_SPLASH, 
+            .splash_image = DEFAULT_SPLASH_IMAGE,
+	        .screenEnabled = DEFAULT_SCREEN,
     };
 	FATFS fs;
 	FIL payload;
+	if(*((u8*)0x101401C0) == 0x0)
+	{
+	  	screenInit();
+	  	debug("Enabeling screen");
+	}
+	clearScreens();
 
 	if(f_mount(&fs, "0:", 1) == FR_OK)
 	{
@@ -69,7 +83,10 @@ int main() {
     	iniparse(INI_FILE, handler, &app);
     	
     	debug("Checking input");
+    	for(volatile u64 i=0;i<0xEFF*app.delay;i++);
 		u32 key = GetInput();
+		app.delay=0;
+
         // using X-macros to generate each switch-case rules
         // https://en.wikibooks.org/wiki/C_Programming/Preprocessor#X-Macros
         #define KEY(k) \
@@ -79,8 +96,7 @@ int main() {
         #include "keys.def"
             app.section = "DEFAULT";
 
-	    debug("Key checked - selected section:");
-	    debug(app.section);
+	    debug("Key checked-selected section: %s",app.section);
 
 	    int config_err = iniparse(INI_FILE, handler, &app);
 
@@ -96,7 +112,7 @@ int main() {
 	                if (!app.path)
 	                    panic("Section [DEFAULT] not found or \"path\" not set.");
 	            } else if (!file_exists(app.path)) {
-	                debug("[ERROR] Target payload not found:");
+	                debug("[ERROR] Target payload not found:\n%s",app.path);
 	                panic(app.path);
 	            }
 	            break;
@@ -105,14 +121,14 @@ int main() {
 	            break;
 	        case -2:
 	            // should not happen, however better be safe than sorry
-	            panic("Config file is too big.");//, INI_FILE);
+	            panic("Config file is too big.");
 	            break;
 	        default:
 	            panic("Error found in config file");//,
 	                    //INI_FILE, config_err);
 	            break;
 	    }
-		
+
 		debug("Checking payload");
 		if(app.payload==0)
 		{	
@@ -123,6 +139,10 @@ int main() {
             debug("[ERROR] Target payload not found:");
             panic(app.path);
 		}
+		
+		debug("Loading Splash image");
+		splash_image(app.splash_image);
+		for(volatile u64 i=0;i<0xEFF*app.delay;i++);
 
 		debug("Loading Payload:");
 		debug(app.path);
@@ -145,6 +165,10 @@ int main() {
 			closeLogFile();
 			f_mount(&fs, "0:", 1);
 			debug("Jumping to the payload");
+			if(app.screenEnabled==0)
+			{
+				screenDeinit();
+			}
 			((void (*)())PAYLOAD_ADDRESS)();
 		}
 	}

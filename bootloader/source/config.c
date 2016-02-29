@@ -104,7 +104,13 @@ int handler(void *user, const char *section, const char *name, const char *value
 	} else if (MATCH(pconfig->section, "payload")) {
 		pconfig->payload = myAtoi(value);
 	} else if (MATCH(pconfig->section, "offset")) {
-		pconfig->offset = numberToInt(value);
-	}
+        pconfig->offset = numberToInt(value);
+    } else if (MATCH(pconfig->section, "splash")) { 
+        pconfig->splash = myAtoi(value);
+    } else if (MATCH(pconfig->section, "splash_image")) { 
+        strcpy (pconfig->splash_image,value); 
+    } else if (MATCH(pconfig->section, "screenEnabled")) {
+        pconfig->screenEnabled = myAtoi(value);
+    }
 	return 1;
 }

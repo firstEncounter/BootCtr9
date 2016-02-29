@@ -25,7 +25,7 @@ INCLUDES	:=	include source/fatfs source/inih source/fatfs/sdmmc
 #---------------------------------------------------------------------------------
 # Setup some defines
 #---------------------------------------------------------------------------------
-
+VERSION		:=	$(shell git describe --abbrev=4 --always --dirty --tags || echo "UNKNOWN")
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ ARCH	:=	-mthumb -mthumb-interwork
 CFLAGS	:=	-g -Wall -O2\
 			-march=armv5te -mtune=arm946e-s -fomit-frame-pointer\
 			-ffast-math -std=c99\
-			$(ARCH)
+			$(ARCH) -DVERSION_STRING="\"$(VERSION)\""
 
 CFLAGS	+=	$(INCLUDE) -DARM9
 
