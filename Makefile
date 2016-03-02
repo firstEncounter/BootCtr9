@@ -1,7 +1,7 @@
-.PHONY : all hax firm0 firm1 sector screen_init stage2 installer clean
+.PHONY : all hax firm0 firm1 sector arm9bootloader screen_init stage2 installer clean
 
 TARGET		=	arm9loaderhax
-PYTHON 		=	python
+PYTHON		=	python
 INDIR		=	data_input
 OUTDIR		=	data_output
 
@@ -13,7 +13,7 @@ $(OUTDIR):
 	@[ -d $(OUTDIR) ] || mkdir -p $(OUTDIR)
 
 firm0:
-	@cd payload_stage1 && make
+	@$(MAKE) -C payload_stage1
 	@cp $(INDIR)/new3ds90.firm $(OUTDIR)/firm0.bin
 	@dd if=payload_stage1/payload_stage1.bin of=$(OUTDIR)/firm0.bin bs=512 seek=1922 conv=notrunc
 	@echo FIRM0 done!
@@ -29,7 +29,7 @@ sector:
 
 arm9bootloader :
 	@echo make BOOTLOADER
-	@cd bootloader && make
+	@$(MAKE) -C bootloader
 	@cp bootloader/arm9bootloader.bin $(OUTDIR)/arm9bootloader.bin
 	@echo BOOTLOADER done!
 
@@ -48,7 +48,7 @@ installer:
 	@cp $(OUTDIR)/firm0.bin payload_installer/brahma2/data/firm0.bin
 	@cp $(OUTDIR)/firm1.bin payload_installer/brahma2/data/firm1.bin
 	@cp $(OUTDIR)/stage0x5C000.bin  payload_installer/brahma2/data/stage2.bin
-	@cd payload_installer && make TARGET=../$(OUTDIR)/$(TARGET)
+	@$(MAKE) -C payload_installer TARGET=../$(OUTDIR)/$(TARGET)
 	@echo INSTALLER done!
 
 clean:
